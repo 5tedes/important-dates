@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Events - February to June 2026</title>
+    <title>School Events Calendar 2026</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
             font-family: Arial, sans-serif;
-            max-width: 900px;
+            max-width: 1100px;
             margin: 40px auto;
             padding: 20px;
             background-color: #f5f5f5;
@@ -15,24 +18,162 @@
         h1 {
             color: #2c3e50;
             text-align: center;
+            margin-bottom: 10px;
+        }
+        .current-date {
+            text-align: center;
+            color: #666;
             margin-bottom: 30px;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85em;
+        }
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+
+        /* Category Colors */
+        .cat-holiday { background-color: #e74c3c; color: white; }
+        .cat-test { background-color: #e67e22; color: white; }
+        .cat-assignment { background-color: #f1c40f; color: #333; }
+        .cat-exam { background-color: #9b59b6; color: white; }
+        .cat-project { background-color: #3498db; color: white; }
+        .cat-activity { background-color: #27ae60; color: white; }
+        .cat-admin { background-color: #95a5a6; color: white; }
+        .cat-special { background-color: #1abc9c; color: white; }
+
+        /* Week View */
+        .week-section {
+            margin-bottom: 30px;
+        }
+        .week-section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        .week-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .week-label {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+            font-weight: bold;
+            padding: 10px 5px;
+            border-radius: 5px 0 0 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            min-width: 30px;
+        }
+        .this-week-label {
+            background-color: #d5e8f7;
+            color: #2980b9;
+        }
+        .next-week-label {
+            background-color: #d5f5e3;
+            color: #27ae60;
+        }
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            flex: 1;
+        }
+        .day-box {
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            min-height: 120px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .this-week .day-box {
+            border-top: 3px solid #3498db;
+        }
+        .next-week .day-box {
+            border-top: 3px solid #27ae60;
+        }
+        .day-box.tomorrow {
+            border-top: 3px solid #e74c3c;
+            background-color: #fef9e7;
+        }
+        .day-box.today {
+            border-top: 3px solid #8e44ad;
+            background-color: #f5eef8;
+        }
+        .day-header {
+            font-weight: bold;
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        .day-header .date {
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        .day-event {
+            font-size: 0.75em;
+            padding: 4px 6px;
+            border-radius: 4px;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        .day-event.past {
+            opacity: 0.5;
+            text-decoration: line-through;
+        }
+
+        /* Month Tables */
+        .month-section {
+            margin-bottom: 30px;
+        }
+        .month-section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             background-color: white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
         th {
-            background-color: #3498db;
+            background-color: #34495e;
             color: white;
-            padding: 15px;
+            padding: 12px 15px;
             text-align: left;
             font-weight: bold;
         }
         td {
-            padding: 15px;
+            padding: 12px 15px;
             border-bottom: 1px solid #e0e0e0;
+            vertical-align: top;
         }
         tr:last-child td {
             border-bottom: none;
@@ -40,192 +181,328 @@
         tr:hover {
             background-color: #f8f9fa;
         }
-        .date {
+        .date-cell {
             font-weight: bold;
             color: #2c3e50;
+            width: 140px;
+            white-space: nowrap;
+        }
+        .category-cell {
             width: 120px;
         }
-        .event-list {
-            line-height: 1.8;
+        .category-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
         }
-        .event-item {
-            margin: 5px 0;
+        .event-cell {
+            line-height: 1.6;
+        }
+        .event-time {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        /* No events message */
+        .no-events {
+            color: #999;
+            font-style: italic;
+            font-size: 0.8em;
+            padding: 5px;
         }
     </style>
 </head>
 <body>
-    <h1>School Events - February to June 2026</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Events</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td class="date">Tuesday, 3 February</td>
-                <td>First Semester Progress Reports</td>
-            </tr>
-            <tr>
-                <td class="date">Thursday, 5 February</td>
-                <td>12:37 - 13:55 • A / Greek as Foreign Language BEG Exam - 1D/1E GFL (beginners) Test1</td>
-            </tr>
-            <tr>
-                <td class="date">Tuesday, 10 February</td>
-                <td>09:31 - 10:49 • Safer Internet Day - Presentation (Year 1 Pupils)</td>
-            </tr>
-            <tr>
-                <td class="date">Wednesday, 11 February</td>
-                <td>12:37 - 13:55 • A / 1D / Mathematics Exam - 1D Mathematics Test 3</td>
-            </tr>
-            <tr>
-                <td class="date">Thursday, 12 February</td>
-                <td class="event-list">
-                    <div class="event-item">• 07:45 - 11:09 - Normal Lessons</div>
-                    <div class="event-item">• 11:10 - 13:00 - "Tsiknopempti" Event - No Extended Day Programme</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="date">Friday, 13 February</td>
-                <td>12:39 - 13:39 • A / 1D / History - 1D History test</td>
-            </tr>
-            <tr>
-                <td class="date">Wednesday, 18 February</td>
-                <td>09:31 - 10:16 • A / 1D / Science - 1D Science Test 1 second semester</td>
-            </tr>
-            <tr>
-                <td class="date">Thursday, 19 February</td>
-                <td>11:09 - 12:27 • A / 1D / English - 1D - English Reading Test - Katerina X.</td>
-            </tr>
-            <tr>
-                <td class="date">Monday, 23 February</td>
-                <td>Public Holiday (Green Monday)</td>
-            </tr>
-            <tr>
-                <td class="date">Tuesday, 24 February</td>
-                <td>Half Term</td>
-            </tr>
-            <tr>
-                <td class="date">Friday, 27 February</td>
-                <td>07:54 - 08:30 • A / 1D / Cyprus History Exam - 1B/1D CYPRUS HISTORY Test 1</td>
-            </tr>
-            <tr>
-                <td class="date">Wednesday, 11 March</td>
-                <td>12:37 - 13:55 • A / 1D / Mathematics Exam - 1D In class assignment Mathematics</td>
-            </tr>
-            <tr>
-                <td class="date">Friday, 13 March</td>
-                <td>19:30 - 23:59 • School Play</td>
-            </tr>
-            <tr>
-                <td class="date">Monday, 16 March</td>
-                <td>16/03/2026 - 20/03/2026 • Science Activities Week & Earth Week Eco Week: Global Recycling Day, Earth Hour, Globeducate Event</td>
-            </tr>
-            <tr>
-                <td class="date">Thursday, 19 March</td>
-                <td>07:53 - 09:11 • A / 1D / French - 1D FRENCH TEST BY G.SAVVA</td>
-            </tr>
-            <tr>
-                <td class="date">Tuesday, 24 March</td>
-                <td>09:31 - 10:49 • School Celebration of the 25th March and 1st of April</td>
-            </tr>
-            <tr>
-                <td class="date">Wednesday, 25 March</td>
-                <td>Public Holiday (Greek Independence Day - Cyprus Schools' Parade)</td>
-            </tr>
-            <tr>
-                <td class="date">Thursday, 26 March</td>
-                <td>11:09 - 12:27 • A / 1D / English - 1D - English Literature Alternative Assessment - Katerina X.</td>
-            </tr>
-            <tr>
-                <td class="date">Monday, 30 March</td>
-                <td>07:45 - 13:55 • PSHE/ Clubs 5th Session - No Extended Day Programme</td>
-            </tr>
-            <tr>
-                <td class="date">Tuesday, 31 March</td>
-                <td>12:37 - 13:55 • A / Greek as Foreign Language BEG Exam - 1D/1E GFL (beginners) Test 2</td>
-            </tr>
-            <tr>
-                <td class="date">Wednesday, 1 April</td>
-                <td>Public Holiday (Cyprus National Day)</td>
-            </tr>
-            <tr>
-                <td class="date">Friday, 3 April</td>
-                <td>07:45 - 13:00 • Excursion - No Extended Day Programme</td>
-            </tr>
-            <tr>
-                <td class="date">Monday, 20 April</td>
-                <td>Return to School - Normal Lessons and Athletic Section Training, Extended Day Programme</td>
-            </tr>
-            <tr>
-                <td class="date">Thursday, 23 April</td>
-                <td>School Holiday (Archbishop's Name Day)</td>
-            </tr>
-            <tr>
-                <td class="date">Friday, 24 April</td>
-                <td>07:54 - 08:30 • A / 1D / Cyprus History Exam - 1B/1D CYPRUS HISTORY Assignment Deadline</td>
-            </tr>
-            <tr>
-                <td class="date">Wednesday, 29 April</td>
-                <td>09:31 - 10:10 • A / 1D / Science - 1D Science Test 2</td>
-            </tr>
-            <tr>
-                <td class="date">Friday, 1 May</td>
-                <td>Public Holiday (Labour Day)</td>
-            </tr>
-            <tr>
-                <td class="date">Monday, 4 May</td>
-                <td>04/05/2026 - 08/05/2026 • STEAM Week, Globeducate Event</td>
-            </tr>
-            <tr>
-                <td class="date">Tuesday, 5 May</td>
-                <td>12:37 - 13:55 • A / Greek as Foreign Language BEG Exam - 1D/1E GFL (beginners) Project Presentations in class</td>
-            </tr>
-            <tr>
-                <td class="date">Wednesday, 6 May</td>
-                <td class="event-list">
-                    <div class="event-item">• 11:09 - 12:27 - A / 1D / English - 1D English Language Project Presentations - Katerina X</div>
-                    <div class="event-item">• 12:37 - 13:55 - A / 1D / Mathematics - 1D Maths test 4</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="date">Thursday, 7 May</td>
-                <td>11:09 - 12:27 • A / 1D / English - 1D English Language Project Presentations - Katerina X</td>
-            </tr>
-            <tr>
-                <td class="date">Tuesday, 19 May</td>
-                <td>Robotics Challenge (EIB Monceau and online) Globeducate Event</td>
-            </tr>
-            <tr>
-                <td class="date">Friday, 22 May</td>
-                <td>07:45 - 15:45 • Last Day of lessons</td>
-            </tr>
-            <tr>
-                <td class="date">Monday, 25 May</td>
-                <td>25/05/2026 - 08/06/2026 • Final Exams</td>
-            </tr>
-            <tr>
-                <td class="date">Monday, 1 June</td>
-                <td>Public Holiday (Holy Spirit)</td>
-            </tr>
-            <tr>
-                <td class="date">Thursday, 11 June</td>
-                <td>School Holiday (Apostle Varnava)</td>
-            </tr>
-            <tr>
-                <td class="date">Monday, 15 June</td>
-                <td>15/06/2026 - 19/06/2026 • Revision Lessons for re-examinees</td>
-            </tr>
-            <tr>
-                <td class="date">Monday, 22 June</td>
-                <td>22/06/2026 08:00 - 23/06/2026 10:30 • Re-exams</td>
-            </tr>
-            <tr>
-                <td class="date">Friday, 26 June</td>
-                <td>19:00 - 23:59 • End of Year Awards and Graduation Ceremony</td>
-            </tr>
-        </tbody>
-    </table>
+    <h1>School Events Calendar 2026</h1>
+    <div class="current-date" id="currentDate"></div>
+
+    <div class="legend">
+        <div class="legend-item"><div class="legend-color cat-holiday"></div> Holiday / No School</div>
+        <div class="legend-item"><div class="legend-color cat-test"></div> Test</div>
+        <div class="legend-item"><div class="legend-color cat-assignment"></div> Assignment</div>
+        <div class="legend-item"><div class="legend-color cat-exam"></div> Exam</div>
+        <div class="legend-item"><div class="legend-color cat-project"></div> Project / Presentation</div>
+        <div class="legend-item"><div class="legend-color cat-activity"></div> School Activity</div>
+        <div class="legend-item"><div class="legend-color cat-admin"></div> Administrative</div>
+        <div class="legend-item"><div class="legend-color cat-special"></div> Special Event</div>
+    </div>
+
+    <div class="week-section">
+        <h2>This Week & Next Week</h2>
+        <div class="week-container">
+            <div class="week-label this-week-label">This Week</div>
+            <div class="week-grid this-week" id="thisWeek"></div>
+        </div>
+        <div class="week-container">
+            <div class="week-label next-week-label">Next Week</div>
+            <div class="week-grid next-week" id="nextWeek"></div>
+        </div>
+    </div>
+
+    <div id="monthlyEvents"></div>
+
+    <script>
+        // All events data with categories
+        const events = [
+            // February
+            { date: '2026-02-03', title: 'First Semester Progress Reports', category: 'admin' },
+            { date: '2026-02-05', time: '12:37 - 13:55', title: '1D/1E GFL (beginners) Test 1', category: 'test' },
+            { date: '2026-02-10', time: '09:31 - 10:49', title: 'Safer Internet Day - Presentation (Year 1 Pupils)', category: 'activity' },
+            { date: '2026-02-11', time: '12:37 - 13:55', title: '1D Mathematics Test 3', category: 'test' },
+            { date: '2026-02-12', time: '07:45 - 11:09', title: 'Normal Lessons', category: 'admin' },
+            { date: '2026-02-12', time: '11:10 - 13:00', title: '"Tsiknopempti" Event - No Extended Day Programme', category: 'special' },
+            { date: '2026-02-13', time: '12:39 - 13:39', title: '1D History Test', category: 'test' },
+            { date: '2026-02-18', time: '09:31 - 10:16', title: '1D Science Test 1 (Second Semester)', category: 'test' },
+            { date: '2026-02-19', time: '11:09 - 12:27', title: '1D English Reading Test - Katerina X.', category: 'test' },
+            { date: '2026-02-23', title: 'Public Holiday (Green Monday)', category: 'holiday' },
+            { date: '2026-02-24', title: 'Half Term', category: 'holiday' },
+            { date: '2026-02-27', time: '07:54 - 08:30', title: '1B/1D Cyprus History Test 1', category: 'test' },
+
+            // March
+            { date: '2026-03-11', time: '12:37 - 13:55', title: '1D Mathematics In Class Assignment', category: 'assignment' },
+            { date: '2026-03-13', time: '19:30 - 23:59', title: 'School Play', category: 'special' },
+            { date: '2026-03-16', endDate: '2026-03-20', title: 'Science Activities Week & Earth Week Eco Week', category: 'activity' },
+            { date: '2026-03-19', time: '07:53 - 09:11', title: '1D French Test - G.Savva', category: 'test' },
+            { date: '2026-03-24', time: '09:31 - 10:49', title: 'School Celebration (25th March & 1st April)', category: 'special' },
+            { date: '2026-03-25', title: 'Public Holiday (Greek Independence Day)', category: 'holiday' },
+            { date: '2026-03-26', time: '11:09 - 12:27', title: '1D English Literature Alternative Assessment - Katerina X.', category: 'test' },
+            { date: '2026-03-30', time: '07:45 - 13:55', title: 'PSHE/Clubs 5th Session - No Extended Day Programme', category: 'special' },
+            { date: '2026-03-31', time: '12:37 - 13:55', title: '1D/1E GFL (beginners) Test 2', category: 'test' },
+
+            // April
+            { date: '2026-04-01', title: 'Public Holiday (Cyprus National Day)', category: 'holiday' },
+            { date: '2026-04-03', time: '07:45 - 13:00', title: 'Excursion - No Extended Day Programme', category: 'special' },
+            { date: '2026-04-20', title: 'Return to School - Normal Lessons', category: 'admin' },
+            { date: '2026-04-23', title: 'School Holiday (Archbishop\'s Name Day)', category: 'holiday' },
+            { date: '2026-04-24', time: '07:54 - 08:30', title: '1B/1D Cyprus History Assignment Deadline', category: 'assignment' },
+            { date: '2026-04-29', time: '09:31 - 10:10', title: '1D Science Test 2', category: 'test' },
+
+            // May
+            { date: '2026-05-01', title: 'Public Holiday (Labour Day)', category: 'holiday' },
+            { date: '2026-05-04', endDate: '2026-05-08', title: 'STEAM Week - Globeducate Event', category: 'activity' },
+            { date: '2026-05-05', time: '12:37 - 13:55', title: '1D/1E GFL Project Presentations', category: 'project' },
+            { date: '2026-05-06', time: '11:09 - 12:27', title: '1D English Language Project Presentations - Katerina X.', category: 'project' },
+            { date: '2026-05-06', time: '12:37 - 13:55', title: '1D Maths Test 4', category: 'test' },
+            { date: '2026-05-07', time: '11:09 - 12:27', title: '1D English Language Project Presentations - Katerina X.', category: 'project' },
+            { date: '2026-05-19', title: 'Robotics Challenge (EIB Monceau) - Globeducate Event', category: 'activity' },
+            { date: '2026-05-22', time: '07:45 - 15:45', title: 'Last Day of Lessons', category: 'admin' },
+            { date: '2026-05-25', endDate: '2026-06-08', title: 'Final Exams', category: 'exam' },
+
+            // June
+            { date: '2026-06-01', title: 'Public Holiday (Holy Spirit)', category: 'holiday' },
+            { date: '2026-06-11', title: 'School Holiday (Apostle Varnava)', category: 'holiday' },
+            { date: '2026-06-15', endDate: '2026-06-19', title: 'Revision Lessons for Re-examinees', category: 'exam' },
+            { date: '2026-06-22', endDate: '2026-06-23', title: 'Re-exams', category: 'exam' },
+            { date: '2026-06-26', time: '19:00 - 23:59', title: 'End of Year Awards and Graduation Ceremony', category: 'special' }
+        ];
+
+        const categoryNames = {
+            'holiday': 'Holiday',
+            'test': 'Test',
+            'assignment': 'Assignment',
+            'exam': 'Exam',
+            'project': 'Project',
+            'activity': 'Activity',
+            'admin': 'Admin',
+            'special': 'Special'
+        };
+
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+        // Get current date
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Display current date
+        document.getElementById('currentDate').textContent =
+            `Today: ${dayNames[today.getDay()]}, ${today.getDate()} ${monthNames[today.getMonth()]} ${today.getFullYear()}`;
+
+        // Calculate week start (Monday)
+        function getMonday(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            return new Date(d.setDate(diff));
+        }
+
+        const thisWeekStart = getMonday(today);
+        const nextWeekStart = new Date(thisWeekStart);
+        nextWeekStart.setDate(nextWeekStart.getDate() + 7);
+        const nextWeekEnd = new Date(nextWeekStart);
+        nextWeekEnd.setDate(nextWeekEnd.getDate() + 6);
+
+        // Get events for a specific date
+        function getEventsForDate(date) {
+            const dateStr = date.toISOString().split('T')[0];
+            return events.filter(event => {
+                if (event.endDate) {
+                    return dateStr >= event.date && dateStr <= event.endDate;
+                }
+                return event.date === dateStr;
+            });
+        }
+
+        // Check if date is in the past
+        function isPast(date) {
+            return date < today;
+        }
+
+        // Check if date is tomorrow
+        function isTomorrow(date) {
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            return date.getTime() === tomorrow.getTime();
+        }
+
+        // Check if date is today
+        function isToday(date) {
+            return date.getTime() === today.getTime();
+        }
+
+        // Render a week grid
+        function renderWeek(containerId, weekStart, isThisWeek) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(weekStart);
+                date.setDate(date.getDate() + i);
+
+                const dayBox = document.createElement('div');
+                dayBox.className = 'day-box';
+
+                if (isThisWeek && isTomorrow(date)) {
+                    dayBox.classList.add('tomorrow');
+                }
+                if (isThisWeek && isToday(date)) {
+                    dayBox.classList.add('today');
+                }
+
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'day-header';
+                dayHeader.innerHTML = `${dayNames[date.getDay()]} <span class="date">${date.getDate()}</span>`;
+                dayBox.appendChild(dayHeader);
+
+                const dayEvents = getEventsForDate(date);
+
+                if (dayEvents.length === 0) {
+                    const noEvents = document.createElement('div');
+                    noEvents.className = 'no-events';
+                    noEvents.textContent = '-';
+                    dayBox.appendChild(noEvents);
+                } else {
+                    dayEvents.forEach(event => {
+                        const eventDiv = document.createElement('div');
+                        eventDiv.className = `day-event cat-${event.category}`;
+
+                        if (isThisWeek && isPast(date)) {
+                            eventDiv.classList.add('past');
+                        }
+
+                        let eventText = event.title;
+                        if (event.endDate && event.date === date.toISOString().split('T')[0]) {
+                            eventText += ' (starts)';
+                        }
+                        eventDiv.textContent = eventText;
+                        dayBox.appendChild(eventDiv);
+                    });
+                }
+
+                container.appendChild(dayBox);
+            }
+        }
+
+        // Render this week and next week
+        renderWeek('thisWeek', thisWeekStart, true);
+        renderWeek('nextWeek', nextWeekStart, false);
+
+        // Get events after next week, grouped by month
+        function getEventsAfterNextWeek() {
+            const afterNextWeek = new Date(nextWeekEnd);
+            afterNextWeek.setDate(afterNextWeek.getDate() + 1);
+
+            const futureEvents = events.filter(event => {
+                const eventDate = new Date(event.date);
+                return eventDate >= afterNextWeek;
+            });
+
+            // Group by month
+            const grouped = {};
+            futureEvents.forEach(event => {
+                const date = new Date(event.date);
+                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                if (!grouped[monthKey]) {
+                    grouped[monthKey] = [];
+                }
+                grouped[monthKey].push(event);
+            });
+
+            return grouped;
+        }
+
+        // Render monthly tables
+        function renderMonthlyEvents() {
+            const container = document.getElementById('monthlyEvents');
+            const grouped = getEventsAfterNextWeek();
+
+            Object.keys(grouped).sort().forEach(monthKey => {
+                const [year, month] = monthKey.split('-');
+                const monthName = monthNames[parseInt(month) - 1];
+
+                const section = document.createElement('div');
+                section.className = 'month-section';
+
+                const heading = document.createElement('h2');
+                heading.textContent = `${monthName} ${year}`;
+                section.appendChild(heading);
+
+                const table = document.createElement('table');
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Event</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                `;
+
+                const tbody = table.querySelector('tbody');
+
+                grouped[monthKey].forEach(event => {
+                    const date = new Date(event.date);
+                    const row = document.createElement('tr');
+
+                    let dateStr = `${dayNames[date.getDay()]}, ${date.getDate()} ${monthNames[date.getMonth()]}`;
+                    if (event.endDate) {
+                        const endDate = new Date(event.endDate);
+                        dateStr += ` - ${endDate.getDate()} ${monthNames[endDate.getMonth()]}`;
+                    }
+
+                    let eventContent = event.title;
+                    if (event.time) {
+                        eventContent = `<span class="event-time">${event.time}</span> ${event.title}`;
+                    }
+
+                    row.innerHTML = `
+                        <td class="date-cell">${dateStr}</td>
+                        <td class="category-cell"><span class="category-badge cat-${event.category}">${categoryNames[event.category]}</span></td>
+                        <td class="event-cell">${eventContent}</td>
+                    `;
+
+                    tbody.appendChild(row);
+                });
+
+                section.appendChild(table);
+                container.appendChild(section);
+            });
+        }
+
+        renderMonthlyEvents();
+    </script>
 </body>
 </html>
